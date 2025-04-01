@@ -16,8 +16,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.image('openjdk:17-jdk').inside('--network cicd-network') {
-                        sh 'javac HttpServerApp.java'
+                    docker.image('openjdk:17-jdk').inside {
+                        sh 'mvn clean package'
                     }
                 }
             }
@@ -26,8 +26,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    docker.image('openjdk:11-jdk').inside('--network cicd-network') {
-                        sh 'java HttpServerApp & sleep 2 && curl -s http://localhost:8080'
+                    docker.image('openjdk:11-jdk'). {
+                        sh 'mvn test'
                     }
                 }
             }
@@ -36,8 +36,8 @@ pipeline {
         stage('Static Code Analysis') {
             steps {
                 script {
-                    docker.image('openjdk:8-jdk').inside('--network cicd-network') {
-                        sh "echo 'Static code analysis placeholder'"
+                    docker.image('openjdk:8-jdk').inside {
+                        sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUE_SERVER}"
                     }
                 }
             }
