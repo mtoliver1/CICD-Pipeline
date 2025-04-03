@@ -24,20 +24,9 @@ pipeline {
         }
 
         stage('Static Code Analysis (Java 21)') {
-    steps {
-        script {
-            withDockerContainer(image: 'maven:3.9.6-eclipse-temurin-21', args: '--network cicd-network') {
-                withSonarQubeEnv('local-sonarqube') {
-                    sh 'mvn sonar:sonar'
-                    }
-                }
-            }
-        }
-
-        stage('Static Code Analysis (Java 21)') {
             steps {
                 script {
-                    docker.image('maven:3.9.6-eclipse-temurin-21').inside {
+                    withDockerContainer(image: 'maven:3.9.6-eclipse-temurin-21', args: '--network cicd-network') {
                         withSonarQubeEnv('local-sonarqube') {
                             sh 'mvn sonar:sonar'
                         }
@@ -55,8 +44,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'docker-hub', 
-                    usernameVariable: 'DOCKER_USER', 
+                    credentialsId: 'docker-hub',
+                    usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
