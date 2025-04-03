@@ -37,7 +37,8 @@ pipeline {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-21').inside {
-                        sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}"
+                withSonarQubeEnv('local-sonarqube') {
+                    sh 'mvn sonar:sonar'
                     }
                 }
             }
