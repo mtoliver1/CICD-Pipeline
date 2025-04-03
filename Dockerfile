@@ -1,7 +1,7 @@
 # Start from the official Jenkins LTS image
 FROM jenkins/jenkins:lts
 
-# Switch to root to install packages
+# Switch to root to install tools
 USER root
 
 # Install Docker CLI and Git
@@ -9,8 +9,7 @@ RUN apt-get update && \
     apt-get install -y docker.io git && \
     apt-get clean
 
-# (Optional) You can install additional tools here if needed (like Maven or Java versions)
+# Optional: add Maven or other tools here if needed later
 
-# Do NOT switch back to 'jenkins' user
-# Keeping Jenkins running as root so it can access the Docker socket
-# USER jenkins
+# Keep running as root so Jenkins can access Docker socket
+# USER jenkins  ← do NOT include this line
