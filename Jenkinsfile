@@ -23,11 +23,12 @@ pipeline {
             }
         }
 
-        stage('Test (Java 11)') {
-            steps {
-                script {
-                    docker.image('maven:3.9.6-eclipse-temurin-11').inside {
-                        sh 'mvn test'
+        stage('Static Code Analysis (Java 21)') {
+    steps {
+        script {
+            withDockerContainer(image: 'maven:3.9.6-eclipse-temurin-21', args: '--network cicd-network') {
+                withSonarQubeEnv('local-sonarqube') {
+                    sh 'mvn sonar:sonar'
                     }
                 }
             }
