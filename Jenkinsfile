@@ -13,7 +13,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build (Java 17)') {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-17').inside {
@@ -23,7 +23,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Test (Java 11)') {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-11').inside {
@@ -33,7 +33,7 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis') {
+        stage('Static Code Analysis (Java 8)') {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-8').inside {
@@ -51,7 +51,11 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub', 
+                    usernameVariable: 'DOCKER_USER', 
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
                     sh 'docker push $DOCKER_IMAGE'
                 }
