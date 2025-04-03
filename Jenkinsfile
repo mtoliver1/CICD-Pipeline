@@ -16,8 +16,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.image('openjdk:17-jdk').inside {
-                        sh 'apt-get update && apt-get install -y maven && mvn clean package'
+                    docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                        sh 'mvn clean package'
                     }
                 }
             }
@@ -26,8 +26,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    docker.image('openjdk:11-jdk').inside {
-                        sh 'apt-get update && apt-get install -y maven && mvn test'
+                    docker.image('maven:3.9.6-eclipse-temurin-11').inside {
+                        sh 'mvn test'
                     }
                 }
             }
@@ -36,14 +36,13 @@ pipeline {
         stage('Static Code Analysis') {
             steps {
                 script {
-                    docker.image('openjdk:8-jdk').inside {
-                        sh 'apt-get update && apt-get install -y maven && mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}'
+                    docker.image('maven:3.9.6-eclipse-temurin-8').inside {
+                        sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}"
                     }
                 }
             }
         }
 
-        // 🚨 No "inside" for these next stages
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE .'
