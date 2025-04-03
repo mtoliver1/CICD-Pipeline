@@ -31,6 +31,14 @@
                     <target>17</target>
                 </configuration>
             </plugin>
+
+            <!-- SonarQube Plugin -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version> <!-- ✅ Java 8 compatible -->
+            </plugin>
         </plugins>
     </build>
+
 </project>
