@@ -33,7 +33,7 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis (Java 8)') {
+        stage('Static Code Analysis (Java 21)') {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-21').inside {
