@@ -36,7 +36,7 @@ pipeline {
         stage('Static Code Analysis (Java 8)') {
             steps {
                 script {
-                    docker.image('maven:3.9.6-eclipse-temurin-8').inside {
+                    docker.image('maven:3.9.6-eclipse-temurin-21').inside {
                         sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}"
                     }
                 }
