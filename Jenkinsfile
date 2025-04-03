@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'http://localhost:9000'
         DOCKER_IMAGE = 'mtolv/java-http-server:latest'
+        SONARQUBE_SERVER = 'http://sonarqube:9000'
     }
 
     stages {
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     docker.image('openjdk:17-jdk').inside {
-                        sh 'mvn clean package'
+                        sh 'apt-get update && apt-get install -y maven && mvn clean package'
                     }
                 }
             }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     docker.image('openjdk:11-jdk').inside {
-                        sh 'mvn test'
+                        sh 'apt-get update && apt-get install -y maven && mvn test'
                     }
                 }
             }
@@ -37,36 +37,31 @@ pipeline {
             steps {
                 script {
                     docker.image('openjdk:8-jdk').inside {
-                        sh "mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}"
+                        sh 'apt-get update && apt-get install -y maven && mvn sonar:sonar -Dsonar.host.url=${SONARQUBE_SERVER}'
                     }
                 }
             }
         }
 
+        // 🚨 No "inside" for these next stages
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                        sh "docker push ${DOCKER_IMAGE}"
-                    }
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    sh 'kubectl apply -f deployment.yaml'
-                }
+                sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
