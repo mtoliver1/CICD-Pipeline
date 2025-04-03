@@ -37,8 +37,9 @@ pipeline {
             steps {
                 script {
                     docker.image('maven:3.9.6-eclipse-temurin-21').inside {
-                withSonarQubeEnv('local-sonarqube') {
-                    sh 'mvn sonar:sonar'
+                        withSonarQubeEnv('local-sonarqube') {
+                            sh 'mvn sonar:sonar'
+                        }
                     }
                 }
             }
