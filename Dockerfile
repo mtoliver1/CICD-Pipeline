@@ -1,11 +1,10 @@
-# Start from the official Jenkins image
 FROM jenkins/jenkins:lts
 
 USER root
 
-# Install Docker CLI
 RUN apt-get update && \
     apt-get install -y docker.io && \
+    groupadd -for -g 0 docker && \
     usermod -aG docker jenkins
 
 USER jenkins
