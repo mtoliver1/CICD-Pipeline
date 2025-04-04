@@ -68,7 +68,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                script {
+                    docker.image('bitnami/kubectl:latest').inside('--network cicd-network -v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'kubectl apply -f deployment.yaml --validate=false'
+                    }
+                }
             }
         }
     }
