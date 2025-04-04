@@ -56,8 +56,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'docker-hub', 
-                    usernameVariable: 'DOCKER_USER', 
+                    credentialsId: 'docker-hub',
+                    usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
@@ -68,11 +68,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    docker.image('bitnami/kubectl:latest').inside('--network cicd-network') {
-                        sh 'kubectl apply -f deployment.yaml'
-                    }
-                }
+                sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
