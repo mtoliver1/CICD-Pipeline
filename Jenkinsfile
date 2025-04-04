@@ -69,8 +69,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-            docker.image('maven:3.9.6-eclipse-temurin-11').inside('--network cicd-network') {
-                sh 'mvn test'
+                    docker.image('bitnami/kubectl:latest').inside('--network cicd-network') {
+                        sh 'kubectl apply -f deployment.yaml'
                     }
                 }
             }
