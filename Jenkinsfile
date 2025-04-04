@@ -16,7 +16,7 @@ pipeline {
         stage('Build (Java 17)') {
             steps {
                 script {
-                    docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                    docker.image('maven:3.9.6-eclipse-temurin-17').inside('--network cicd-network') {
                         sh 'mvn clean package'
                     }
                 }
@@ -26,7 +26,7 @@ pipeline {
         stage('Test (Java 11)') {
             steps {
                 script {
-                    docker.image('maven:3.9.6-eclipse-temurin-11').inside {
+                    docker.image('maven:3.9.6-eclipse-temurin-11').inside('--network cicd-network') {
                         sh 'mvn test'
                     }
                 }
@@ -68,7 +68,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                script {
+                    docker.image('bitnami/kubectl:latest').inside('--network cicd-network') {
+                        sh 'kubectl apply -f deployment.yaml'
+                    }
+                }
             }
         }
     }
