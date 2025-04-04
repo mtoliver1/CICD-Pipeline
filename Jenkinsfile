@@ -68,8 +68,16 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                // ✅ This assumes Jenkins can call host-level kubectl (Docker Desktop enabled)
-                sh 'kubectl apply -f deployment.yaml --validate=false'
+                script {
+                    docker.image('bitnami/minideb').inside('--network cicd-network') {
+                        sh '''
+                            apt update && apt install -y curl
+                            curl -LO "https://dl.k8s.io/release/v1.31.4/bin/linux/amd64/kubectl"
+                            chmod +x kubectl && mv kubectl /usr/local/bin/kubectl
+                            kubectl apply -f deployment.yaml --validate=false
+                        '''
+                    }
+                }
             }
         }
     }
